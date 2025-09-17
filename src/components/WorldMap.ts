@@ -487,22 +487,17 @@ export class WorldMap {
             if (!path.classList.contains('selected')) {
               path.style.fill = 'var(--duolingo-blue)';
             }
-            // Afficher le nom du pays en français si disponible
-            const frenchName = frenchNames[countryCode] || feature.properties.NAME;
-            this.showTooltip(frenchName);
+            // Tooltip supprimé - plus d'affichage du nom du pays
           });
           
           path.addEventListener('mouseleave', () => {
             if (!path.classList.contains('selected')) {
               path.style.fill = 'var(--duolingo-gray-medium)';
             }
-            this.hideTooltip();
+            // Tooltip supprimé - plus de masquage
           });
           
-          // Ajouter un titre pour l'accessibilité avec nom français
-          const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-          title.textContent = frenchNames[countryCode] || feature.properties.NAME;
-          path.appendChild(title);
+          // Titre SVG supprimé - plus de tooltip natif du navigateur
         } else {
           // Pays non interactif (pas dans notre jeu)
           path.style.fill = '#f0f0f0';
@@ -571,32 +566,7 @@ export class WorldMap {
     }
   }
 
-  private showTooltip(countryName: string) {
-    const tooltip = document.getElementById('map-tooltip');
-    if (tooltip) {
-      tooltip.textContent = countryName;
-      tooltip.style.opacity = '1';
-      
-      // Positionner le tooltip près de la souris
-      document.addEventListener('mousemove', this.updateTooltipPosition);
-    }
-  }
-
-  private hideTooltip() {
-    const tooltip = document.getElementById('map-tooltip');
-    if (tooltip) {
-      tooltip.style.opacity = '0';
-      document.removeEventListener('mousemove', this.updateTooltipPosition);
-    }
-  }
-
-  private updateTooltipPosition = (e: MouseEvent) => {
-    const tooltip = document.getElementById('map-tooltip');
-    if (tooltip) {
-      tooltip.style.left = (e.pageX + 10) + 'px';
-      tooltip.style.top = (e.pageY - 30) + 'px';
-    }
-  };
+  // Méthodes de tooltip supprimées - plus de tooltips
 
   private addZoomAndPanEvents() {
     // Zoom avec la molette de souris
@@ -751,14 +721,7 @@ export class WorldMap {
   }
 
   public destroy() {
-    // Nettoyer le tooltip
-    const tooltip = document.getElementById('map-tooltip');
-    if (tooltip) {
-      tooltip.remove();
-    }
-    
-    // Nettoyer les event listeners
-    document.removeEventListener('mousemove', this.updateTooltipPosition);
+    // Plus de tooltip à nettoyer
     
     // Nettoyer les contrôles de zoom
     const zoomControls = this.container.querySelector('.map-zoom-controls');

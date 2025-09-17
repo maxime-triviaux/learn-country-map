@@ -1,0 +1,482 @@
+/* Système de design inspiré de Duolingo */
+:root {
+  /* Couleurs principales Duolingo */
+  --duolingo-green: #58CC02;
+  --duolingo-green-hover: #46A302;
+  --duolingo-green-dark: #4CAF50;
+  --duolingo-blue: #1CB0F6;
+  --duolingo-blue-hover: #0FA0E6;
+  --duolingo-red: #FF4B4B;
+  --duolingo-orange: #FF9600;
+  --duolingo-yellow: #FFD700;
+  --duolingo-purple: #CE82FF;
+  
+  /* Couleurs neutres */
+  --duolingo-white: #FFFFFF;
+  --duolingo-gray-light: #F7F7F7;
+  --duolingo-gray-medium: #E5E5E5;
+  --duolingo-gray-dark: #777777;
+  --duolingo-gray-darker: #4B4B4B;
+  --duolingo-black: #2B2B2B;
+  
+  /* Typographie */
+  --font-primary: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-weight-normal: 400;
+  --font-weight-medium: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 800;
+  
+  /* Espacements */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  /* Ombres */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Reset et base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-normal);
+  color: var(--duolingo-black);
+  background-color: var(--duolingo-gray-light);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Boutons Duolingo */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  min-height: 50px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background-color: var(--duolingo-green);
+  color: var(--duolingo-white);
+  border-bottom: 4px solid var(--duolingo-green-dark);
+}
+
+.btn-primary:hover {
+  background-color: var(--duolingo-green-hover);
+}
+
+.btn-secondary {
+  background-color: var(--duolingo-blue);
+  color: var(--duolingo-white);
+  border-bottom: 4px solid #0FA0E6;
+}
+
+.btn-secondary:hover {
+  background-color: var(--duolingo-blue-hover);
+}
+
+.btn-danger {
+  background-color: var(--duolingo-red);
+  color: var(--duolingo-white);
+  border-bottom: 4px solid #E53E3E;
+}
+
+.btn-outline {
+  background-color: var(--duolingo-white);
+  color: var(--duolingo-gray-darker);
+  border: 2px solid var(--duolingo-gray-medium);
+  border-bottom: 4px solid var(--duolingo-gray-medium);
+}
+
+/* Cards */
+.card {
+  background: var(--duolingo-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--duolingo-gray-medium);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.app-header {
+  background: var(--duolingo-white);
+  border-bottom: 2px solid var(--duolingo-gray-medium);
+  padding: var(--spacing-md) 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.app-title {
+  font-size: 28px;
+  font-weight: var(--font-weight-black);
+  color: var(--duolingo-green);
+  text-align: center;
+  margin: 0;
+}
+
+.game-container {
+  padding: var(--spacing-xl) 0;
+  min-height: calc(100vh - 80px);
+}
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: var(--duolingo-gray-medium);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: var(--spacing-lg);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--duolingo-green), var(--duolingo-blue));
+  border-radius: var(--radius-sm);
+  transition: width 0.3s ease;
+}
+
+/* Score display */
+.score-display {
+  background: var(--duolingo-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--duolingo-gray-medium);
+  margin-bottom: var(--spacing-lg);
+}
+
+.score-number {
+  font-size: 32px;
+  font-weight: var(--font-weight-black);
+  color: var(--duolingo-green);
+}
+
+.score-label {
+  font-size: 14px;
+  color: var(--duolingo-gray-dark);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Question display */
+.question-card {
+  background: var(--duolingo-white);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2xl);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  border: 3px solid var(--duolingo-gray-medium);
+  margin-bottom: var(--spacing-xl);
+}
+
+.question-text {
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+  color: var(--duolingo-black);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.3;
+}
+
+/* Input fields */
+.input-field {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--duolingo-gray-medium);
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: 18px;
+  font-weight: var(--font-weight-medium);
+  background: var(--duolingo-white);
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--duolingo-blue);
+  box-shadow: 0 0 0 3px rgba(28, 176, 246, 0.1);
+}
+
+/* Feedback messages */
+.feedback {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  margin: var(--spacing-md) 0;
+}
+
+.feedback-correct {
+  background: rgba(88, 204, 2, 0.1);
+  color: var(--duolingo-green);
+  border: 2px solid var(--duolingo-green);
+}
+
+.feedback-incorrect {
+  background: rgba(255, 75, 75, 0.1);
+  color: var(--duolingo-red);
+  border: 2px solid var(--duolingo-red);
+}
+
+/* Map styles */
+.map-container {
+  background: var(--duolingo-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-lg);
+  border: 3px solid var(--duolingo-gray-medium);
+  margin: var(--spacing-lg) 0;
+  overflow: hidden;
+}
+
+.country-path {
+  fill: var(--duolingo-gray-medium);
+  stroke: var(--duolingo-white);
+  stroke-width: 0.5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.country-path:hover {
+  fill: var(--duolingo-blue) !important;
+  stroke: var(--duolingo-white);
+  stroke-width: 1;
+  filter: drop-shadow(0 2px 4px rgba(28, 176, 246, 0.3));
+}
+
+.country-path.selected {
+  fill: var(--duolingo-green) !important;
+  stroke: var(--duolingo-white);
+  stroke-width: 2;
+  filter: drop-shadow(0 2px 6px rgba(88, 204, 2, 0.4));
+}
+
+.country-path.correct {
+  fill: var(--duolingo-green) !important;
+  stroke: var(--duolingo-white);
+  stroke-width: 2;
+  animation: pulse 0.5s ease-in-out;
+  filter: drop-shadow(0 3px 8px rgba(88, 204, 2, 0.5));
+}
+
+.country-path.incorrect {
+  fill: var(--duolingo-red) !important;
+  stroke: var(--duolingo-white);
+  stroke-width: 2;
+  animation: shake 0.5s ease-in-out;
+  filter: drop-shadow(0 3px 8px rgba(255, 75, 75, 0.5));
+}
+
+/* Tooltip pour la carte */
+#map-tooltip {
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-medium);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-sm);
+}
+
+/* Légende de la carte */
+.map-legend {
+  font-family: var(--font-primary);
+}
+
+.map-legend text {
+  user-select: none;
+}
+
+/* Contrôles de zoom */
+.map-zoom-controls {
+  pointer-events: auto;
+}
+
+.zoom-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--duolingo-white);
+  color: var(--duolingo-gray-darker);
+  font-size: 16px;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--duolingo-gray-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-btn:hover {
+  background: var(--duolingo-blue);
+  color: var(--duolingo-white);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.zoom-btn:active {
+  transform: translateY(0);
+}
+
+.zoom-btn.zoom-reset:hover {
+  background: var(--duolingo-green);
+}
+
+/* Curseurs pour la carte interactive */
+.map-container svg {
+  user-select: none;
+}
+
+.map-container svg.dragging {
+  cursor: grabbing !important;
+}
+
+/* Instructions de zoom */
+.zoom-instructions {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--duolingo-gray-dark);
+  font-family: var(--font-primary);
+  box-shadow: var(--shadow-sm);
+  pointer-events: none;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+  
+  .question-card {
+    padding: var(--spacing-lg);
+  }
+  
+  .question-text {
+    font-size: 20px;
+  }
+  
+  .app-title {
+    font-size: 24px;
+  }
+  
+  .btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 14px;
+    min-height: 44px;
+  }
+  
+  .map-container {
+    padding: var(--spacing-sm);
+  }
+  
+  .score-display {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .flex {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .flex:not(.flex-column) .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-container {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .question-text {
+    font-size: 18px;
+  }
+  
+  .score-number {
+    font-size: 24px;
+  }
+}
+
+/* Utilitaires */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mt-xl { margin-top: var(--spacing-xl); }
+
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.mb-xl { margin-bottom: var(--spacing-xl); }
+
+.hidden { display: none; }
+.visible { display: block; }
+
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.flex-column { flex-direction: column; }

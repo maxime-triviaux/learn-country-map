@@ -1,0 +1,52 @@
+{
+  "name": "learn-country-map",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Une webapp éducative pour apprendre les pays et capitales avec un design inspiré de Duolingo",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "serve": "npm run build && npm run preview"
+  },
+  "keywords": [
+    "géographie",
+    "éducation",
+    "jeu",
+    "pays",
+    "capitales",
+    "duolingo",
+    "carte",
+    "interactive",
+    "typescript",
+    "vite"
+  ],
+  "author": "Assistant IA",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/d3-geo": "^3.1.0",
+    "@types/topojson-client": "^3.1.4",
+    "typescript": "^5.6.3",
+    "vite": "^7.1.5"
+  },
+  "dependencies": {
+    "d3-geo": "^3.1.1",
+    "d3-geo-projection": "^4.0.0",
+    "topojson-client": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/votre-username/learn-country-map.git"
+  },
+  "bugs": {
+    "url": "https://github.com/votre-username/learn-country-map/issues"
+  },
+  "homepage": "https://votre-username.github.io/learn-country-map"
+}

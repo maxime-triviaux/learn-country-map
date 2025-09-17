@@ -1,6 +1,7 @@
 import type { GameState, GameEvent } from '../types';
 import { GAME_PHASES } from '../types';
 import { COUNTRIES, getRandomCountry, findCountryByCode, validateCapitalAnswer } from '../utils/countries';
+import { getCountriesByContinent } from '../data/continents';
 
 export class GameManager {
   private state: GameState;
@@ -16,12 +17,13 @@ export class GameManager {
       score: 0,
       totalQuestions,
       currentQuestion: 0,
-      gamePhase: GAME_PHASES.SELECT_COUNTRY,
+      gamePhase: GAME_PHASES.SELECT_CONTINENT,
       selectedCountryCode: null,
       userAnswer: '',
       isCorrect: null,
       countries: COUNTRIES,
       usedCountries: [],
+      selectedContinent: null,
     };
   }
 
@@ -62,6 +64,9 @@ export class GameManager {
       case 'START_GAME':
         this.startGame(event.payload.totalQuestions);
         break;
+      case 'SELECT_CONTINENT':
+        this.selectContinent(event.payload);
+        break;
       case 'SELECT_COUNTRY':
         this.selectCountry(event.payload);
         break;
@@ -85,6 +90,30 @@ export class GameManager {
    */
   private startGame(totalQuestions: number) {
     this.state = this.createInitialState(totalQuestions);
+    this.notifyListeners();
+  }
+
+  /**
+   * Sélectionne un continent
+   */
+  private selectContinent(continentKey: string) {
+    if (this.state.gamePhase !== GAME_PHASES.SELECT_CONTINENT) {
+      return;
+    }
+
+    this.state.selectedContinent = continentKey;
+    
+    // Filtrer les pays selon le continent
+    if (continentKey === 'world') {
+      this.state.countries = COUNTRIES;
+    } else {
+      const continentCountries = getCountriesByContinent(continentKey);
+      this.state.countries = COUNTRIES.filter(country => 
+        continentCountries.includes(country.cca2)
+      );
+    }
+    
+    // Commencer la première question
     this.startNewQuestion();
     this.notifyListeners();
   }
@@ -104,9 +133,27 @@ export class GameManager {
     }
 
     this.state.selectedCountryCode = countryCode;
-    this.state.currentCountry = country;
-    this.state.gamePhase = GAME_PHASES.GUESS_CAPITAL;
-    this.state.userAnswer = '';
+    
+    // Vérifier si le pays sélectionné est le bon
+    if (this.state.currentCountry && countryCode === this.state.currentCountry.cca2) {
+      // Pays correct - passer à la phase de devinette de capitale
+      this.state.gamePhase = GAME_PHASES.GUESS_CAPITAL;
+      this.state.userAnswer = '';
+      this.state.isCorrect = null;
+    } else {
+      // Pays incorrect - marquer comme échec et passer à la question suivante
+      this.state.isCorrect = false;
+      this.state.gamePhase = GAME_PHASES.FEEDBACK;
+      
+      console.log(`Mauvais pays sélectionné. Attendu: ${this.state.currentCountry?.name.common} (${this.state.currentCountry?.cca2}), Reçu: ${country.name.common} (${countryCode})`);
+      
+      // Passer automatiquement à la question suivante après un délai
+      setTimeout(() => {
+        if (this.state.gamePhase === GAME_PHASES.FEEDBACK) {
+          this.dispatch({ type: 'NEXT_QUESTION' });
+        }
+      }, 2500); // Un peu plus long pour laisser le temps de voir l'erreur
+    }
     
     this.notifyListeners();
   }

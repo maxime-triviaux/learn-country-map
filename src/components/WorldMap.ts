@@ -1,5 +1,6 @@
 import { geoPath, geoNaturalEarth1 } from 'd3-geo';
 import type { MapProps } from '../types';
+import { CONTINENTS } from '../data/continents';
 
 // Interface pour les features GeoJSON
 interface GeoFeature {
@@ -48,12 +49,39 @@ export class WorldMap {
   }
 
   private setupProjection() {
-    // Augmenter le zoom par défaut de 140 à 180
+    // Configuration par défaut
     this.projection = geoNaturalEarth1()
       .scale(180)
       .translate([this.width / 2, this.height / 2]);
     
     this.pathGenerator = geoPath().projection(this.projection);
+  }
+
+  private updateProjectionForContinent(continent?: string | null) {
+    if (!continent || continent === 'world') {
+      // Vue mondiale par défaut
+      this.projection
+        .scale(180)
+        .translate([this.width / 2, this.height / 2])
+        .rotate([0, 0]);
+    } else {
+      const continentInfo = CONTINENTS[continent];
+      if (continentInfo) {
+        const { scale, centerLat, centerLon } = continentInfo.zoomConfig;
+        this.projection
+          .scale(scale)
+          .translate([this.width / 2, this.height / 2])
+          .rotate([-centerLon, 0])
+          .center([0, centerLat]);
+      }
+    }
+    
+    this.pathGenerator = geoPath().projection(this.projection);
+    
+    // Réinitialiser la transformation
+    this.currentScale = 1;
+    this.currentTranslateX = 0;
+    this.currentTranslateY = 0;
   }
 
   private createSVG() {
@@ -80,7 +108,7 @@ export class WorldMap {
     
     this.container.appendChild(this.svg);
     
-    // Ajouter les contrôles de zoom
+    // Ajouter les contrôles de zoom (sans bouton maison et sans instructions)
     this.addZoomControls();
   }
 
@@ -114,6 +142,10 @@ export class WorldMap {
       'Spain': 'ES',
       'United Kingdom': 'GB',
       'United States of America': 'US',
+      'United States': 'US',
+      'USA': 'US',
+      'US': 'US',
+      'America': 'US',
       'Canada': 'CA',
       'Brazil': 'BR',
       'Argentina': 'AR',
@@ -160,7 +192,103 @@ export class WorldMap {
       'Czechia': 'CZ',
       'Hungary': 'HU',
       'Romania': 'RO',
-      'Ukraine': 'UA'
+      'Ukraine': 'UA',
+      // Nouveaux pays ajoutés
+      'Morocco': 'MA',
+      'Algeria': 'DZ',
+      'Tunisia': 'TN',
+      'Libya': 'LY',
+      'Sudan': 'SD',
+      'Ethiopia': 'ET',
+      'Ghana': 'GH',
+      'Ivory Coast': 'CI',
+      'Côte d\'Ivoire': 'CI',
+      'Senegal': 'SN',
+      'Cameroon': 'CM',
+      'Tanzania': 'TZ',
+      'Uganda': 'UG',
+      'Zambia': 'ZM',
+      'Zimbabwe': 'ZW',
+      'Botswana': 'BW',
+      'Namibia': 'NA',
+      'Afghanistan': 'AF',
+      'Pakistan': 'PK',
+      'Bangladesh': 'BD',
+      'Sri Lanka': 'LK',
+      'Myanmar': 'MM',
+      'Cambodia': 'KH',
+      'Laos': 'LA',
+      'Mongolia': 'MN',
+      'Kazakhstan': 'KZ',
+      'Uzbekistan': 'UZ',
+      'Jordan': 'JO',
+      'Lebanon': 'LB',
+      'Syria': 'SY',
+      'Kuwait': 'KW',
+      'United Arab Emirates': 'AE',
+      'Qatar': 'QA',
+      'Oman': 'OM',
+      'Yemen': 'YE',
+      'Ecuador': 'EC',
+      'Uruguay': 'UY',
+      'Paraguay': 'PY',
+      'Bolivia': 'BO',
+      'Guyana': 'GY',
+      'Suriname': 'SR',
+      'Costa Rica': 'CR',
+      'Panama': 'PA',
+      'Nicaragua': 'NI',
+      'Honduras': 'HN',
+      'Guatemala': 'GT',
+      'Belize': 'BZ',
+      'El Salvador': 'SV',
+      'Cuba': 'CU',
+      'Jamaica': 'JM',
+      'Dominican Republic': 'DO',
+      'Haiti': 'HT',
+      'Ireland': 'IE',
+      'Iceland': 'IS',
+      'Luxembourg': 'LU',
+      'Croatia': 'HR',
+      'Serbia': 'RS',
+      'Bosnia and Herzegovina': 'BA',
+      'Slovenia': 'SI',
+      'Slovakia': 'SK',
+      'Bulgaria': 'BG',
+      'Lithuania': 'LT',
+      'Latvia': 'LV',
+      'Estonia': 'EE',
+      // Pays africains supplémentaires
+      'Angola': 'AO',
+      'Mozambique': 'MZ',
+      'Madagascar': 'MG',
+      'Democratic Republic of the Congo': 'CD',
+      'Dem. Rep. Congo': 'CD',
+      'Congo': 'CG',
+      'Republic of the Congo': 'CG',
+      'Gabon': 'GA',
+      'Equatorial Guinea': 'GQ',
+      'Chad': 'TD',
+      'Central African Republic': 'CF',
+      'Mali': 'ML',
+      'Burkina Faso': 'BF',
+      'Niger': 'NE',
+      'Mauritania': 'MR',
+      'Guinea': 'GN',
+      'Sierra Leone': 'SL',
+      'Liberia': 'LR',
+      'Togo': 'TG',
+      'Benin': 'BJ',
+      'Rwanda': 'RW',
+      'Burundi': 'BI',
+      'Malawi': 'MW',
+      'Somalia': 'SO',
+      'Eritrea': 'ER',
+      'Djibouti': 'DJ',
+      'Lesotho': 'LS',
+      'Eswatini': 'SZ',
+      'Swaziland': 'SZ',
+      'Greenland': 'GL'
     };
 
     // Mapping pour afficher les noms français dans les tooltips
@@ -216,7 +344,99 @@ export class WorldMap {
       'CZ': 'République tchèque',
       'HU': 'Hongrie',
       'RO': 'Roumanie',
-      'UA': 'Ukraine'
+      'UA': 'Ukraine',
+      // Nouveaux pays ajoutés
+      'MA': 'Maroc',
+      'DZ': 'Algérie',
+      'TN': 'Tunisie',
+      'LY': 'Libye',
+      'SD': 'Soudan',
+      'ET': 'Éthiopie',
+      'GH': 'Ghana',
+      'CI': 'Côte d\'Ivoire',
+      'SN': 'Sénégal',
+      'CM': 'Cameroun',
+      'TZ': 'Tanzanie',
+      'UG': 'Ouganda',
+      'ZM': 'Zambie',
+      'ZW': 'Zimbabwe',
+      'BW': 'Botswana',
+      'NA': 'Namibie',
+      'AF': 'Afghanistan',
+      'PK': 'Pakistan',
+      'BD': 'Bangladesh',
+      'LK': 'Sri Lanka',
+      'MM': 'Myanmar',
+      'KH': 'Cambodge',
+      'LA': 'Laos',
+      'MN': 'Mongolie',
+      'KZ': 'Kazakhstan',
+      'UZ': 'Ouzbékistan',
+      'JO': 'Jordanie',
+      'LB': 'Liban',
+      'SY': 'Syrie',
+      'KW': 'Koweït',
+      'AE': 'Émirats arabes unis',
+      'QA': 'Qatar',
+      'OM': 'Oman',
+      'YE': 'Yémen',
+      'EC': 'Équateur',
+      'UY': 'Uruguay',
+      'PY': 'Paraguay',
+      'BO': 'Bolivie',
+      'GY': 'Guyana',
+      'SR': 'Suriname',
+      'CR': 'Costa Rica',
+      'PA': 'Panama',
+      'NI': 'Nicaragua',
+      'HN': 'Honduras',
+      'GT': 'Guatemala',
+      'BZ': 'Belize',
+      'SV': 'Salvador',
+      'CU': 'Cuba',
+      'JM': 'Jamaïque',
+      'DO': 'République dominicaine',
+      'HT': 'Haïti',
+      'IE': 'Irlande',
+      'IS': 'Islande',
+      'LU': 'Luxembourg',
+      'HR': 'Croatie',
+      'RS': 'Serbie',
+      'BA': 'Bosnie-Herzégovine',
+      'SI': 'Slovénie',
+      'SK': 'Slovaquie',
+      'BG': 'Bulgarie',
+      'LT': 'Lituanie',
+      'LV': 'Lettonie',
+      'EE': 'Estonie',
+      // Pays africains supplémentaires
+      'AO': 'Angola',
+      'MZ': 'Mozambique',
+      'MG': 'Madagascar',
+      'CD': 'République démocratique du Congo',
+      'CG': 'République du Congo',
+      'GA': 'Gabon',
+      'GQ': 'Guinée équatoriale',
+      'TD': 'Tchad',
+      'CF': 'République centrafricaine',
+      'ML': 'Mali',
+      'BF': 'Burkina Faso',
+      'NE': 'Niger',
+      'MR': 'Mauritanie',
+      'GN': 'Guinée',
+      'SL': 'Sierra Leone',
+      'LR': 'Liberia',
+      'TG': 'Togo',
+      'BJ': 'Bénin',
+      'RW': 'Rwanda',
+      'BI': 'Burundi',
+      'MW': 'Malawi',
+      'SO': 'Somalie',
+      'ER': 'Érythrée',
+      'DJ': 'Djibouti',
+      'LS': 'Lesotho',
+      'SZ': 'Eswatini',
+      'GL': 'Groenland'
     };
 
     this.worldData.features.forEach((feature) => {
@@ -235,6 +455,18 @@ export class WorldMap {
         // Debug pour voir les pays disponibles
         if (countryCode && ['FR', 'DE', 'IT', 'ES', 'GB', 'US'].includes(countryCode)) {
           console.log('Pays trouvé:', feature.properties.name || feature.properties.NAME, 'Code:', countryCode);
+        }
+        
+        // Debug spécial pour les États-Unis
+        if ((feature.properties.name || feature.properties.NAME || '').toLowerCase().includes('united') || 
+            (feature.properties.name || feature.properties.NAME || '').toLowerCase().includes('america') ||
+            (feature.properties.name || feature.properties.NAME || '').toLowerCase().includes('states')) {
+          console.log('Pays US potentiel:', {
+            name: feature.properties.name,
+            NAME: feature.properties.NAME,
+            ISO_A2: feature.properties.ISO_A2,
+            countryCode: countryCode
+          });
         }
         
         if (countryCode) {
@@ -316,11 +548,13 @@ export class WorldMap {
     element.style.cursor = 'pointer';
     element.style.transition = 'all 0.2s ease';
     
+    // Pays sélectionné (vert par défaut)
     if (this.props.selectedCountry === countryCode) {
       element.classList.add('selected');
       element.style.fill = 'var(--duolingo-green)';
     }
     
+    // Feedback pour le pays mis en évidence (celui cliqué)
     if (this.props.highlightedCountry === countryCode && this.props.feedbackState) {
       element.classList.add(this.props.feedbackState);
       if (this.props.feedbackState === 'correct') {
@@ -328,6 +562,12 @@ export class WorldMap {
       } else {
         element.style.fill = 'var(--duolingo-red)';
       }
+    }
+    
+    // Afficher le bon pays en vert quand il y a une erreur
+    if (this.props.correctCountry === countryCode && this.props.feedbackState === 'incorrect') {
+      element.classList.add('correct');
+      element.style.fill = 'var(--duolingo-green)';
     }
   }
 
@@ -437,25 +677,18 @@ export class WorldMap {
       this.zoomAt(this.width / 2, this.height / 2, 0.75);
     });
 
-    // Bouton reset
-    const resetBtn = document.createElement('button');
-    resetBtn.innerHTML = '🏠';
-    resetBtn.className = 'zoom-btn zoom-reset';
-    resetBtn.title = 'Vue d\'ensemble';
-    resetBtn.addEventListener('click', () => {
-      this.resetZoom();
-    });
+    // Ne plus ajouter le bouton reset (maison) 🏠
 
     controlsContainer.appendChild(zoomInBtn);
     controlsContainer.appendChild(zoomOutBtn);
-    controlsContainer.appendChild(resetBtn);
+    // controlsContainer.appendChild(resetBtn); // Supprimé
 
     // Ajouter au conteneur parent (position relative nécessaire)
     this.container.style.position = 'relative';
     this.container.appendChild(controlsContainer);
 
-    // Ajouter les instructions de zoom
-    this.addZoomInstructions();
+    // Ne plus ajouter les instructions de zoom
+    // this.addZoomInstructions(); // Supprimé
   }
 
   private zoomAt(mouseX: number, mouseY: number, zoomFactor: number) {
@@ -473,12 +706,7 @@ export class WorldMap {
     }
   }
 
-  private resetZoom() {
-    this.currentScale = 1;
-    this.currentTranslateX = 0;
-    this.currentTranslateY = 0;
-    this.updateTransform();
-  }
+  // Méthode resetZoom supprimée - plus de bouton maison
 
   private updateTransform() {
     const countriesGroup = this.svg.querySelector('#countries');
@@ -489,34 +717,18 @@ export class WorldMap {
     }
   }
 
-  private addZoomInstructions() {
-    const instructionsContainer = document.createElement('div');
-    instructionsContainer.className = 'zoom-instructions';
-    instructionsContainer.innerHTML = `
-      <div style="margin-bottom: 4px;"><strong>🔍 Navigation :</strong></div>
-      <div>• Molette : Zoom</div>
-      <div>• Glisser : Déplacer</div>
-      <div>• Boutons : Contrôles</div>
-    `;
-    
-    this.container.appendChild(instructionsContainer);
-    
-    // Masquer les instructions après 5 secondes
-    setTimeout(() => {
-      if (instructionsContainer.parentNode) {
-        instructionsContainer.style.opacity = '0';
-        instructionsContainer.style.transition = 'opacity 0.5s ease';
-        setTimeout(() => {
-          if (instructionsContainer.parentNode) {
-            instructionsContainer.remove();
-          }
-        }, 500);
-      }
-    }, 5000);
-  }
+  // Méthode supprimée - plus d'instructions de zoom
 
   public updateProps(newProps: MapProps) {
+    const oldContinent = this.props.continent;
     this.props = newProps;
+    
+    // Si le continent a changé, mettre à jour la projection
+    if (oldContinent !== newProps.continent) {
+      this.updateProjectionForContinent(newProps.continent);
+      this.render(); // Re-rendre la carte avec la nouvelle projection
+      return;
+    }
     
     // Mettre à jour tous les pays
     const countryElements = this.svg.querySelectorAll('.country-path');
@@ -554,11 +766,7 @@ export class WorldMap {
       zoomControls.remove();
     }
     
-    // Nettoyer les instructions
-    const instructions = this.container.querySelector('.zoom-instructions');
-    if (instructions) {
-      instructions.remove();
-    }
+    // Plus d'instructions à nettoyer
     
     // Nettoyer le conteneur
     this.container.innerHTML = '';

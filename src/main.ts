@@ -3,6 +3,7 @@ import { GameManager } from './game/GameManager';
 import { createWorldMap, WorldMap } from './components/WorldMap';
 import type { GameState } from './types';
 import { GAME_PHASES } from './types';
+import { CONTINENTS } from './data/continents';
 
 class GeographyGameApp {
   private gameManager: GameManager;
@@ -54,6 +55,8 @@ class GeographyGameApp {
 
   private getGameHTML(state: GameState): string {
     switch (state.gamePhase) {
+      case GAME_PHASES.SELECT_CONTINENT:
+        return this.getSelectContinentHTML(state);
       case GAME_PHASES.SELECT_COUNTRY:
         return this.getSelectCountryHTML(state);
       case GAME_PHASES.GUESS_CAPITAL:
@@ -81,18 +84,52 @@ class GeographyGameApp {
     `;
   }
 
+  private getSelectContinentHTML(_state: GameState): string {
+    const continentOptions = Object.values(CONTINENTS).map(continent => {
+      return `
+        <div class="continent-option" data-continent="${continent.name}">
+          <div class="continent-card">
+            <div class="continent-icon">${continent.icon}</div>
+            <h3>${continent.displayName}</h3>
+            <p>${continent.countries.length === 0 ? 'Tous les pays' : continent.countries.length + ' pays'}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="game-container">
+        <div class="card text-center">
+          <h2>Choisissez votre continent</h2>
+          <p>Sélectionnez la région du monde sur laquelle vous souhaitez jouer :</p>
+          
+          <div class="continents-grid">
+            ${continentOptions}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   private getSelectCountryHTML(state: GameState): string {
     const progress = (state.currentQuestion / state.totalQuestions) * 100;
+    const continentName = state.selectedContinent ? 
+      Object.values(CONTINENTS).find(c => c.name === state.selectedContinent)?.displayName || 'Continent' 
+      : 'Continent';
     
     return `
       <div class="game-container">
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: ${progress}%"></div>
-        </div>
-        
-        <div class="score-display">
-          <div class="score-number">${state.score}</div>
-          <div class="score-label">Points</div>
+        <div class="game-header">
+          <button class="btn btn-secondary btn-back" id="back-to-continent">
+            ← ${continentName}
+          </button>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${progress}%"></div>
+          </div>
+          <div class="score-display">
+            <div class="score-number">${state.score}</div>
+            <div class="score-label">Points</div>
+          </div>
         </div>
 
         <div class="question-card">
@@ -163,6 +200,26 @@ class GeographyGameApp {
     const isCorrect = state.isCorrect;
     const correctAnswer = state.currentCountry?.capital[0] || '';
     
+    // Déterminer le type d'erreur
+    const isCountryError = state.selectedCountryCode && state.selectedCountryCode !== state.currentCountry?.cca2;
+    const isCapitalError = !isCountryError && state.userAnswer && state.userAnswer.trim() !== '';
+    
+    let feedbackMessage = '';
+    
+    if (isCorrect) {
+      feedbackMessage = `🎉 Excellent ! La capitale est bien <strong>${correctAnswer}</strong>`;
+    } else if (isCountryError) {
+      // L'utilisateur a cliqué sur le mauvais pays
+      const selectedCountry = this.gameManager.getState().countries.find(c => c.cca2 === state.selectedCountryCode);
+      feedbackMessage = `❌ Mauvais pays ! Vous avez sélectionné <strong>${selectedCountry?.name.common || 'pays inconnu'}</strong>, mais il fallait trouver <strong>${state.currentCountry?.name.common}</strong>`;
+    } else if (isCapitalError) {
+      // L'utilisateur a donné une mauvaise réponse pour la capitale
+      feedbackMessage = `❌ Pas tout à fait... La capitale de ${state.currentCountry?.name.common} est <strong>${correctAnswer}</strong>, pas "${state.userAnswer}"`;
+    } else {
+      // Cas par défaut
+      feedbackMessage = `❌ La bonne réponse était <strong>${state.currentCountry?.name.common}</strong> avec pour capitale <strong>${correctAnswer}</strong>`;
+    }
+    
     return `
       <div class="game-container">
         <div class="progress-bar">
@@ -180,10 +237,7 @@ class GeographyGameApp {
           </h2>
           
           <div class="feedback ${isCorrect ? 'feedback-correct' : 'feedback-incorrect'}">
-            ${isCorrect 
-              ? `🎉 Excellent ! La capitale est bien <strong>${correctAnswer}</strong>` 
-              : `❌ Pas tout à fait... La capitale de ${state.currentCountry?.name.common} est <strong>${correctAnswer}</strong>, pas "${state.userAnswer}"`
-            }
+            ${feedbackMessage}
           </div>
           
           <p style="color: var(--duolingo-gray-dark); margin-top: var(--spacing-md);">
@@ -239,6 +293,26 @@ class GeographyGameApp {
     if (startBtn) {
       startBtn.addEventListener('click', () => {
         console.log('Démarrage du jeu...');
+        this.gameManager.dispatch({ type: 'START_GAME', payload: { totalQuestions: 10, difficulty: 'medium' } });
+      });
+    }
+
+    // Sélection de continent
+    const continentOptions = document.querySelectorAll('.continent-option');
+    continentOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const continent = option.getAttribute('data-continent');
+        if (continent) {
+          this.gameManager.dispatch({ type: 'SELECT_CONTINENT', payload: continent });
+        }
+      });
+    });
+
+    // Bouton retour vers sélection de continent
+    const backToContinentBtn = document.getElementById('back-to-continent');
+    if (backToContinentBtn) {
+      backToContinentBtn.addEventListener('click', () => {
+        // Revenir à la sélection de continent
         this.gameManager.dispatch({ type: 'START_GAME', payload: { totalQuestions: 10, difficulty: 'medium' } });
       });
     }
@@ -330,8 +404,11 @@ class GeographyGameApp {
         },
         selectedCountry: state.selectedCountryCode,
         highlightedCountry: state.selectedCountryCode,
+        correctCountry: state.gamePhase === GAME_PHASES.FEEDBACK && !state.isCorrect ? 
+          state.currentCountry?.cca2 : null,
         feedbackState: state.gamePhase === GAME_PHASES.FEEDBACK ? 
           (state.isCorrect ? 'correct' : 'incorrect') : null,
+        continent: state.selectedContinent,
       });
 
       // Gérer le redimensionnement

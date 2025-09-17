@@ -15,19 +15,22 @@ export interface GameState {
   score: number;
   totalQuestions: number;
   currentQuestion: number;
-  gamePhase: 'select-country' | 'guess-capital' | 'feedback' | 'game-over';
+  gamePhase: 'select-continent' | 'select-country' | 'guess-capital' | 'feedback' | 'game-over';
   selectedCountryCode: string | null;
   userAnswer: string;
   isCorrect: boolean | null;
   countries: Country[];
   usedCountries: string[]; // Codes des pays déjà utilisés
+  selectedContinent: string | null; // Continent sélectionné
 }
 
 export interface MapProps {
   onCountryClick: (countryCode: string) => void;
   selectedCountry: string | null;
   highlightedCountry: string | null;
+  correctCountry?: string | null;
   feedbackState: 'correct' | 'incorrect' | null;
+  continent?: string | null;
 }
 
 export interface QuestionProps {
@@ -93,6 +96,7 @@ export interface PlayerStats {
 // Types pour les événements
 export type GameEvent = 
   | { type: 'START_GAME'; payload: GameConfig }
+  | { type: 'SELECT_CONTINENT'; payload: string }
   | { type: 'SELECT_COUNTRY'; payload: string }
   | { type: 'SUBMIT_ANSWER'; payload: string }
   | { type: 'NEXT_QUESTION' }
@@ -128,6 +132,7 @@ export const calculateScore = (
 
 // Constantes
 export const GAME_PHASES = {
+  SELECT_CONTINENT: 'select-continent' as const,
   SELECT_COUNTRY: 'select-country' as const,
   GUESS_CAPITAL: 'guess-capital' as const,
   FEEDBACK: 'feedback' as const,

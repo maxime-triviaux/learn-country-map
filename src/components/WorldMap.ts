@@ -283,8 +283,6 @@ export class WorldMap {
       }
     });
 
-    // Ajouter la légende
-    // this.addTooltip();
   }
 
   private renderFallback() {
@@ -331,26 +329,6 @@ export class WorldMap {
         element.style.fill = 'var(--duolingo-red)';
       }
     }
-  }
-
-  private addTooltip() {
-    const tooltip = document.createElement('div');
-    tooltip.id = 'map-tooltip';
-    tooltip.style.position = 'absolute';
-    tooltip.style.background = 'var(--duolingo-black)';
-    tooltip.style.color = 'var(--duolingo-white)';
-    tooltip.style.padding = '8px 12px';
-    tooltip.style.borderRadius = '6px';
-    tooltip.style.fontSize = '14px';
-    tooltip.style.fontFamily = 'var(--font-primary)';
-    tooltip.style.fontWeight = '600';
-    tooltip.style.pointerEvents = 'none';
-    tooltip.style.opacity = '0';
-    tooltip.style.transition = 'opacity 0.2s ease';
-    tooltip.style.zIndex = '1000';
-    tooltip.style.whiteSpace = 'nowrap';
-    
-    document.body.appendChild(tooltip);
   }
 
   private showTooltip(countryName: string) {
